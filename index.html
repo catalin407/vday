@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>For You ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --rose: #c4465a;
+    --rose-deep: #8b1a2b;
+    --rose-light: #e8a0ad;
+    --blush: #f5dde0;
+    --cream: #fdf6f0;
+    --gold: #c9a96e;
+    --gold-light: #e2d1a8;
+    --ink: #3a1a1a;
+    --page-bg: #faf3ed;
+    --page-shadow: rgba(60, 20, 20, 0.12);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--cream);
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(196, 70, 90, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(201, 169, 110, 0.1) 0%, transparent 50%),
+      var(--cream);
+  }
+
+  /* Floating hearts background */
+  .hearts-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .hearts-bg .heart {
+    position: absolute;
+    font-size: 1rem;
+    color: var(--rose-light);
+    opacity: 0;
+    animation: floatHeart linear infinite;
+  }
+
+  @keyframes floatHeart {
+    0%   { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
+    10%  { opacity: 0.3; }
+    90%  { opacity: 0.15; }
+    100% { transform: translateY(-10vh) rotate(45deg) scale(1); opacity: 0; }
+  }
+
+  /* ─── Book container ─── */
+  .book-wrapper {
+    position: relative; z-index: 1;
+    width: 92vw; max-width: 440px;
+    height: 80vh; max-height: 680px;
+    perspective: 1200px;
+  }
+
+  .book {
+    position: relative;
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  /* ─── Page spread (two-page view) ─── */
+  .spread {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow:
+      0 4px 24px var(--page-shadow),
+      0 1px 4px rgba(60,20,20,0.08);
+    animation: fadeSpread 0.45s ease;
+  }
+  .spread.active { display: flex; }
+
+  @keyframes fadeSpread {
+    from { opacity: 0; transform: scale(0.97); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* ─── COVER ─── */
+  .cover {
+    background:
+      linear-gradient(135deg, var(--rose-deep) 0%, var(--rose) 40%, #d4616f 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute; inset: 8px;
+    border: 1.5px solid var(--gold);
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent, transparent 30px,
+        rgba(255,255,255,0.015) 30px, rgba(255,255,255,0.015) 31px
+      );
+    pointer-events: none;
+  }
+
+  .cover-ornament {
+    font-family: 'Great Vibes', cursive;
+    color: var(--gold);
+    font-size: 2.4rem;
+    margin-bottom: 0.4rem;
+    opacity: 0.7;
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.7; text-shadow: 0 0 8px rgba(201,169,110,0.3); }
+    50%      { opacity: 1; text-shadow: 0 0 20px rgba(201,169,110,0.5); }
+  }
+
+  .cover-title {
+    font-family: 'Great Vibes', cursive;
+    color: #fff;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    line-height: 1.3;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    margin-bottom: 1rem;
+  }
+
+  .cover-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--gold-light);
+    font-size: clamp(0.9rem, 3.5vw, 1.15rem);
+    font-style: italic;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .cover-heart-divider {
+    color: var(--gold);
+    font-size: 1rem;
+    margin: 1rem 0;
+    letter-spacing: 0.6em;
+    opacity: 0.6;
+  }
+
+  .cover-date {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--blush);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 1.2rem;
+    opacity: 0.7;
+  }
+
+  /* ─── Inner pages ─── */
+  .page-left, .page-right {
+    flex: 1;
+    position: relative;
+  }
+
+  /* Left page: text */
+  .page-left {
+    background:
+      linear-gradient(180deg, var(--page-bg) 0%, #f7ede4 100%);
+    padding: 1.8rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid rgba(180,140,120,0.15);
+  }
+
+  .page-left::before {
+    content: '';
+    position: absolute;
+    right: 0; top: 8%; bottom: 8%;
+    width: 1px;
+    background: transparent;
+  }
+
+  .page-left .page-number {
+    position: absolute; bottom: 0.7rem; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--rose-light);
+    letter-spacing: 0.1em;
+  }
+
+  .page-text-ornament {
+    font-family: 'Great Vibes', cursive;
+    color: var(--rose-light);
+    font-size: 1.6rem;
+    margin-bottom: 0.6rem;
+    opacity: 0.5;
+  }
+
+  .page-text {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--ink);
+    font-size: clamp(0.95rem, 3.8vw, 1.1rem);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.75;
+    text-align: center;
+    max-width: 320px;
+  }
+
+  .page-text-author {
+    margin-top: 0.8rem;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--rose);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* Right page: photo */
+  .page-right {
+    background: var(--page-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+  }
+
+  .photo-frame {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 3 / 4;
+    border: 3px solid var(--gold-light);
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow:
+      0 2px 12px rgba(60,20,20,0.1),
+      inset 0 0 30px rgba(60,20,20,0.04);
+  }
+
+  .photo-frame img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-frame .photo-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background:
+      linear-gradient(135deg, var(--blush) 0%, #f0ddd5 100%);
+    color: var(--rose-light);
+    gap: 0.5rem;
+  }
+
+  .photo-placeholder svg {
+    width: 40px; height: 40px;
+    stroke: var(--rose-light);
+    fill: none;
+    stroke-width: 1.5;
+  }
+
+  .photo-placeholder span {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .page-right .page-number {
+    position: absolute; bottom: 0.7rem; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--rose-light);
+    letter-spacing: 0.1em;
+  }
+
+  /* Page divider line (horizontal, between top and bottom) */
+  .page-divider {
+    width: 100%;
+    height: 0;
+    border-top: 1px solid rgba(180, 140, 120, 0.2);
+    position: relative;
+  }
+  .page-divider::after {
+    content: '♥';
+    position: absolute;
+    top: -0.55rem; left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--rose-light);
+    background: var(--page-bg);
+    padding: 0 0.5rem;
+  }
+
+  /* ─── Back cover ─── */
+  .back-cover {
+    background:
+      linear-gradient(135deg, var(--rose-deep) 0%, var(--rose) 40%, #d4616f 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+  }
+  .back-cover::before {
+    content: '';
+    position: absolute; inset: 8px;
+    border: 1.5px solid var(--gold);
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .back-cover-text {
+    font-family: 'Great Vibes', cursive;
+    color: #fff;
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    line-height: 1.5;
+  }
+  .back-cover-heart {
+    font-size: 2.5rem;
+    margin-top: 1rem;
+    animation: pulseHeart 1.5s ease-in-out infinite;
+  }
+  @keyframes pulseHeart {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+
+  /* ─── Navigation arrows ─── */
+  .nav-arrows {
+    position: absolute;
+    bottom: -3rem;
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 10;
+  }
+
+  .nav-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rose-light);
+    background: rgba(255,255,255,0.85);
+    color: var(--rose);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(196, 70, 90, 0.1);
+  }
+  .nav-btn:active {
+    transform: scale(0.92);
+    background: var(--blush);
+  }
+  .nav-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .nav-btn svg {
+    width: 18px; height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .page-dots {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .page-dots .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--rose-light);
+    opacity: 0.35;
+    transition: all 0.3s ease;
+  }
+  .page-dots .dot.active {
+    opacity: 1;
+    background: var(--rose);
+    transform: scale(1.3);
+  }
+
+  /* Swipe hint */
+  .swipe-hint {
+    position: absolute;
+    bottom: -5.5rem;
+    left: 50%; transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--rose-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    animation: fadeInUp 1s 1.5s ease both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to   { opacity: 0.6; transform: translateX(-50%) translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<div class="book-wrapper">
+  <div class="book" id="book">
+
+    <!-- ════════════════════════════════════════
+         COVER — Edit your cover text here
+         ════════════════════════════════════════ -->
+    <div class="spread active" data-index="0">
+      <div class="cover" style="flex:1;">
+        <div class="cover-ornament">♥</div>
+        <div class="cover-title">Ce iubesc</div>
+        <div class="cover-heart-divider">♥ ♥ ♥</div>
+        <div class="cover-subtitle">
+          Daca e ceva ce iubesc, aceea esti tu
+        </div>
+        <div class="cover-date">MEREU</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         PAGE SPREAD 1 — Edit text + add photo
+         ════════════════════════════════════════ -->
+    <div class="spread" data-index="1">
+      <div class="page-left">
+        <div class="page-text-ornament">❝</div>
+        <div class="page-text">
+          Prima iesire la mare, prima iesire spontana facuta impreuna cu minunatia asta de fata
+        </div>
+        <div class="page-text-author">Prima data la mare</div>
+        <div class="page-number">1</div>
+      </div>
+      <div class="page-divider"></div>
+      <div class="page-right">
+        <!-- Replace the placeholder below with an <img> tag:
+             <img src="your-photo.jpg" alt="Our photo"> -->
+        <div class="photo-frame">
+          <!-- <div class="photo-placeholder">
+            <svg viewBox="0 0 24 24"><path d="M12 21C12 21 4 14.36 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.87 12 5.5C11.09 3.87 12.76 3 14.5 3C17.58 3 20 5.42 20 8.5C20 14.36 12 21 12 21Z"/></svg>
+            <span>Your photo here</span>
+          </div> -->
+          <img src="photo-1.jpeg" alt="Our photo"> 
+        </div>
+        <div class="page-number">2</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         PAGE SPREAD 2 — Edit text + add photo
+         ════════════════════════════════════════ -->
+    <div class="spread" data-index="2">
+      <div class="page-left">
+        <div class="page-text-ornament">❝</div>
+        <div class="page-text">
+          Aici este o fata mult mai talentata decat Lara Croft la trasul cu arma, ce bine ca nu a tintit arma spre mine
+        </div>
+        <div class="page-text-author">Ana Croft in actiune</div>
+        <div class="page-number">3</div>
+      </div>
+      <div class="page-divider"></div>
+      <div class="page-right">
+        <div class="photo-frame">
+          <img src="photo-2.jpeg" alt="Our photo"> 
+        </div>
+        <div class="page-number">4</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         PAGE SPREAD 3 — Edit text + add photo
+         ════════════════════════════════════════ -->
+    <div class="spread" data-index="3">
+      <div class="page-left">
+        <div class="page-text-ornament">❝</div>
+        <div class="page-text">
+          Aici e raza mea de lumina, care lumineaza mai tare decat Soarele vara ❤️
+        </div>
+        <div class="page-text-author">Tu esti cea care imi lumineaza sufletul</div>
+        <div class="page-number">5</div>
+      </div>
+      <div class="page-divider"></div>
+      <div class="page-right">
+        <div class="photo-frame">
+          <img src="photo-3.jpeg" alt="Our photo"> 
+        </div>
+        <div class="page-number">6</div>
+      </div>
+    </div>
+
+    <div class="spread" data-index="4">
+      <div class="page-left">
+        <div class="page-text-ornament">❝</div>
+        <div class="page-text">
+          Singurul moment surprins cu tine si alcoolul
+        </div>
+        <div class="page-text-author">Dragoste la primul pahar</div>
+        <div class="page-number">5</div>
+      </div>
+      <div class="page-divider"></div>
+      <div class="page-right">
+        <div class="photo-frame">
+          <img src="photo-4.jpeg" alt="Our photo"> 
+        </div>
+        <div class="page-number">6</div>
+      </div>
+    </div>
+
+    <div class="spread" data-index="5">
+      <div class="page-left">
+        <div class="page-text-ornament">❝</div>
+        <div class="page-text">
+          Cum ai aparut aici dupa colt, asa ai aparut si in viata mea, prin surprinde, dar in momentul in care aveam cea mai mare nevoie
+        </div>
+        <div class="page-text-author">O supriza placuta</div>
+        <div class="page-number">5</div>
+      </div>
+      <div class="page-divider"></div>
+      <div class="page-right">
+        <div class="photo-frame">
+          <img src="photo-5.jpeg" alt="Our photo"> 
+        </div>
+        <div class="page-number">6</div>
+      </div>
+    </div>
+
+    <div class="spread" data-index="6">
+      <div class="page-left">
+        <div class="page-text-ornament">❝</div>
+        <div class="page-text">
+          Pozele astea sunt perfecte pentru mine, pentru ca te vad pe tine zambind, si e cel mai important lucru
+        </div>
+        <div class="page-text-author">Zambetul</div>
+        <div class="page-number">5</div>
+      </div>
+      <div class="page-divider"></div>
+      <div class="page-right">
+        <div class="photo-frame">
+          <img src="photo-6.jpeg" alt="Our photo"> 
+        </div>
+        <div class="page-number">6</div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         BACK COVER — Edit your closing text
+         ════════════════════════════════════════ -->
+    <div class="spread" data-index="7">
+      <div class="back-cover" style="flex:1;">
+        <div class="back-cover-text">
+          Stiu ca nu sunt bun sa imi exprimi emotiile cum o faci tu, dar incerc sa invat de la tine mereu, dar poate pentru momentul asta pot folosi modul asta sa imi exprim sentimetele fata de tine.
+          Vreau sa pot sa iti ofer ceea ce mi-ai oferit si tu: zambete, rasete, voie buna. Vreau sa fiu cel care iti une zambetul pe buze, cel care vede primul pozele, cel care iti zice mereu "neata" prima data, vreau sa fiu langa tine si sa nu te las la greu.
+          Nu vreau sa te las pentru ca tu esti iubirea si printesa din viata mea.
+        </div>
+        <div class="back-cover-heart">❤️</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-arrows">
+    <button class="nav-btn" id="prevBtn" aria-label="Previous page">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="page-dots" id="pageDots"></div>
+    <button class="nav-btn" id="nextBtn" aria-label="Next page">
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+  </div>
+
+  <div class="swipe-hint">swipe or tap arrows</div>
+</div>
+
+<script>
+  // ─── Book navigation ───
+  const spreads = document.querySelectorAll('.spread');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const dotsContainer = document.getElementById('pageDots');
+  let current = 0;
+  const total = spreads.length;
+
+  // Create dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dotsContainer.appendChild(dot);
+  }
+  const dots = dotsContainer.querySelectorAll('.dot');
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    spreads[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = index;
+    spreads[current].classList.add('active');
+    dots[current].classList.add('active');
+    prevBtn.classList.toggle('disabled', current === 0);
+    nextBtn.classList.toggle('disabled', current === total - 1);
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Touch / swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const bookEl = document.getElementById('book');
+
+  bookEl.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  bookEl.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(current + 1);   // swipe left → next
+      else goTo(current - 1);             // swipe right → prev
+    }
+  }, { passive: true });
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+  });
+
+  // Init state
+  goTo(0);
+
+  // ─── Floating hearts background ───
+  const heartsBg = document.getElementById('heartsBg');
+  const heartChars = ['♥', '❤', '♡', '❥'];
+  for (let i = 0; i < 15; i++) {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+    h.style.left = Math.random() * 100 + '%';
+    h.style.fontSize = (0.6 + Math.random() * 1) + 'rem';
+    h.style.animationDuration = (8 + Math.random() * 12) + 's';
+    h.style.animationDelay = (Math.random() * 10) + 's';
+    heartsBg.appendChild(h);
+  }
+</script>
+</body>
+</html>
